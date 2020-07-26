@@ -9,7 +9,7 @@ use std::time::Duration;
 
 fn main() {
     println!("Server started");
-
+    
     let listener = TcpListener::bind("127.0.0.1:7878").expect("Couldn't Bind to port");
 
     for (id, stream) in listener.incoming().enumerate() {
