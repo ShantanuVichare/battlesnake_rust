@@ -7,9 +7,18 @@ use serde::{Serialize, Deserialize};
 //     username: String,
 // }
 
-async fn index(req: HttpRequest) -> impl Responder {
+#[derive(Debug, Deserialize)]
+struct RootBody {
+    apiversion: String,
+    author: String,
+    color: String,
+    head: String,
+    tail: String,
+}
+
+async fn index(req: HttpRequest, body: web::Json<RootBody>) -> impl Responder {
     println!("Request:\n{:?}", req);
-    // println!("Body:\n{:?}", body);
+    println!("Body:\n{:?}", body);
     HttpResponse::Ok().body("At the root")
 }
 
