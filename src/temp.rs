@@ -6,7 +6,6 @@ use std::fs;
 use std::thread;
 use std::time::Duration;
 
-
 fn main() {
     println!("Server started");
     

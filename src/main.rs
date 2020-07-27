@@ -1,45 +1,49 @@
 use actix_web::{web, App, HttpRequest, HttpResponse, HttpServer, Responder};
-// use serde_derive::Deserialize;
-use serde::{Serialize, Deserialize};
+use serde_json;
+use battlesnake_rust::*;
 
-// #[derive(Debug, Deserialize)]
-// struct Info {
-//     username: String,
-// }
 
-#[derive(Debug, Deserialize)]
-struct RootBody {
-    apiversion: String,
-    author: String,
-    color: String,
-    head: String,
-    tail: String,
+
+async fn index(req: HttpRequest) -> impl Responder {
+    // println!("Request:\n{:?}", req);
+
+    let response = serde_json::to_string(&RootResponse::default()).unwrap();
+    HttpResponse::Ok()
+    .content_type("application/json")
+    .body(response)
+
 }
 
-async fn index(req: HttpRequest, body: web::Json<RootBody>) -> impl Responder {
-    println!("Request:\n{:?}", req);
+async fn start_handler(req: HttpRequest, body: web::Json<RequestBody>) -> impl Responder {
+    // println!("Request:\n{:?}", req);
+    println!("Start Body:\n{:?}", body);
+    HttpResponse::Ok()
+}
+
+async fn move_handler(req: HttpRequest, body: web::Json<RequestBody>) -> impl Responder {
+    // println!("Request:\n{:?}", req);
+    println!("Move Body:\n{:?}", body);
+    let temp = body;
+    let response = serde_json::to_string(&MoveResponse::new("left","Going left")).unwrap();
+    HttpResponse::Ok()
+    .content_type("application/json")
+    .body(response)
+}
+
+async fn end_handler(req: HttpRequest, body: web::Json<RequestBody>) -> impl Responder {
+    // println!("Request:\n{:?}", req);
     println!("Body:\n{:?}", body);
-    HttpResponse::Ok().body("At the root")
-}
-
-async fn start_handler(req: HttpRequest) -> impl Responder {
-    println!("Request:\n{:?}", req);
-    HttpResponse::Ok().body("Hello!")
-}
-
-async fn move_handler(req: HttpRequest) -> impl Responder {
-    println!("Request:\n{:?}", req);
-    HttpResponse::Ok().body("Move!")
-}
-
-async fn end_handler(req: HttpRequest) -> impl Responder {
-    println!("Request:\n{:?}", req);
-    HttpResponse::Ok().body("Bye!")
+    HttpResponse::Ok()
 }
 
 
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
+    let response = serde_json::to_string(&MoveResponse::new("left","Going left")).unwrap();
+    println!("{}", serde_json::to_string(&response).unwrap());
+
+    
+
     let port = std::env::var("PORT")
         .unwrap_or_else(|_| "3000".to_string())
         .parse()
