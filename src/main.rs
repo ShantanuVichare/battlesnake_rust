@@ -1,4 +1,4 @@
-use actix_web::{web::{self, Json}, App, HttpRequest, HttpResponse, HttpServer, Responder};
+use actix_web::{web::{self, Json, Data}, App, HttpRequest, HttpResponse, HttpServer, Responder};
 use serde_json;
 
 use battlesnake_rust::*;
@@ -11,29 +11,32 @@ async fn index(req: HttpRequest) -> impl Responder {
     HttpResponse::Ok()
     .content_type("application/json")
     .body(response)
-
 }
 
-async fn start_handler(req: HttpRequest, body: Json<RequestBody>) -> impl Responder {
+async fn start_handler(req: HttpRequest, body: Json<RequestBody>, data: Data<AppStateWrapper>) -> impl Responder {
     // println!("Request:\n{:?}", req);
-    println!("Start Body:\n{:?}", body);
+    // println!("Start Body:\n{:?}", body);
+
+    data.initialise(&body);
     HttpResponse::Ok()
 }
 
-async fn move_handler(req: HttpRequest, body: Json<RequestBody>) -> impl Responder {
+async fn move_handler(req: HttpRequest, body: Json<RequestBody>, data: Data<AppStateWrapper>) -> impl Responder {
     // println!("Request:\n{:?}", req);
-    println!("Move Body:\n{:?}", body);
-    let temp = &body.board.food;
-    println!("Food: {:?}", temp);
-    let response = serde_json::to_string(&MoveResponse::new(body.get_response(),"Get out of my way!")).unwrap();
+    // println!("Move Body:\n{:?}", body);
+    
+    data.update(&body);
+    let response = serde_json::to_string(&MoveResponse::new(data.get_response(),"Get out of my way!")).unwrap();
     HttpResponse::Ok()
     .content_type("application/json")
     .body(response)
 }
 
-async fn end_handler(req: HttpRequest, body: Json<RequestBody>) -> impl Responder {
+async fn end_handler(req: HttpRequest, body: Json<RequestBody>, data: Data<AppStateWrapper>) -> impl Responder {
     // println!("Request:\n{:?}", req);
-    println!("Body:\n{:?}", body);
+    println!("End Body:\n{:?}", body);
+
+    data.end_game(&body);
     HttpResponse::Ok()
 }
 
@@ -49,9 +52,12 @@ async fn main() -> std::io::Result<()> {
     let ip = &std::env::var("IP")
         .unwrap_or_else(|_| "127.0.0.1".to_string());
 
+    let mut data = Data::new(AppStateWrapper::new());
+    
     println!("Attempting to host at {}:{}", ip, port);
-    HttpServer::new(|| {
+    HttpServer::new(move || {
         App::new()
+            .app_data(data.clone())
             .route("/", web::get().to(index))
             .route("/start", web::get().to(start_handler))
             .route("/move", web::post().to(move_handler))

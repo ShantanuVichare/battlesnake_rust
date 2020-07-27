@@ -1,4 +1,5 @@
 use serde::{Serialize, Deserialize};
+use std::{borrow::Borrow, sync::Mutex};
 
 #[derive(Debug, Serialize)]
 pub struct RootResponse {
@@ -32,13 +33,8 @@ impl MoveResponse {
 pub struct RequestBody {
     game: Game,
     turn: usize,
-    pub board: Board,
+    board: Board,
     you: Battlesnake,
-}
-impl RequestBody {
-    pub fn get_response(&self) -> &str {
-        "left"
-    }
 }
 
 #[derive(Debug, Deserialize)]
@@ -51,7 +47,7 @@ struct Game {
 pub struct Board {
     height: usize,
     width: usize, 
-    pub food: Vec<Point>,
+    food: Vec<Point>,
     snakes: Vec<Battlesnake>,
 }
 
@@ -74,4 +70,59 @@ pub struct Point {
 }
 
 #[derive(Debug, Deserialize)]
-enum Direction { up, down, left, right }
+enum Direction { no_idea, up, down, left, right }
+
+pub struct AppStateWrapper {
+    state: Mutex<AppState>,
+}
+impl AppStateWrapper {
+    pub fn new() -> AppStateWrapper {
+        AppStateWrapper {
+            state: Mutex::new(AppState::new()),
+        }
+    }
+    pub fn initialise(&self, body: &RequestBody) {
+        self.state.lock().unwrap().initialise(body);
+    }
+    pub fn update(&self, body: &RequestBody) {
+        self.state.lock().unwrap().update(body);
+    }
+    pub fn get_response(&self) -> &str {
+        match self.state.lock().unwrap().next_move {
+            Direction::up => "up",
+            Direction::down => "down",
+            Direction::left => "left",
+            Direction::right => "right",
+            Direction::no_idea => {
+                eprintln!("Response was asked without updating 'next_move' !");
+                "up"
+            }
+        }
+    }
+    pub fn end_game(&self, body: &RequestBody) {
+        self.state.lock().unwrap().renew();
+    }
+}
+
+struct AppState {
+    next_move: Direction,
+}
+
+impl AppState {
+    fn new() -> AppState {
+        AppState {
+            next_move: Direction::no_idea,
+        }
+        // Remember to copy this config to renew method
+    }
+    fn renew(&mut self) {
+        self.next_move = Direction::no_idea;
+    }
+    fn initialise(&mut self, body: &RequestBody) {
+
+    }
+    fn update(&mut self, body: &RequestBody) {
+
+    }
+    
+}
