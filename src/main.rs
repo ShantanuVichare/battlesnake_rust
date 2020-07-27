@@ -1,7 +1,7 @@
-use actix_web::{web, App, HttpRequest, HttpResponse, HttpServer, Responder};
+use actix_web::{web::{self, Json}, App, HttpRequest, HttpResponse, HttpServer, Responder};
 use serde_json;
-use battlesnake_rust::*;
 
+use battlesnake_rust::*;
 
 
 async fn index(req: HttpRequest) -> impl Responder {
@@ -14,23 +14,24 @@ async fn index(req: HttpRequest) -> impl Responder {
 
 }
 
-async fn start_handler(req: HttpRequest, body: web::Json<RequestBody>) -> impl Responder {
+async fn start_handler(req: HttpRequest, body: Json<RequestBody>) -> impl Responder {
     // println!("Request:\n{:?}", req);
     println!("Start Body:\n{:?}", body);
     HttpResponse::Ok()
 }
 
-async fn move_handler(req: HttpRequest, body: web::Json<RequestBody>) -> impl Responder {
+async fn move_handler(req: HttpRequest, body: Json<RequestBody>) -> impl Responder {
     // println!("Request:\n{:?}", req);
     println!("Move Body:\n{:?}", body);
-    let temp = body;
-    let response = serde_json::to_string(&MoveResponse::new("left","Going left")).unwrap();
+    let temp = &body.board.food;
+    println!("Food: {:?}", temp);
+    let response = serde_json::to_string(&MoveResponse::new(body.get_response(),"Get out of my way!")).unwrap();
     HttpResponse::Ok()
     .content_type("application/json")
     .body(response)
 }
 
-async fn end_handler(req: HttpRequest, body: web::Json<RequestBody>) -> impl Responder {
+async fn end_handler(req: HttpRequest, body: Json<RequestBody>) -> impl Responder {
     // println!("Request:\n{:?}", req);
     println!("Body:\n{:?}", body);
     HttpResponse::Ok()
@@ -39,11 +40,7 @@ async fn end_handler(req: HttpRequest, body: web::Json<RequestBody>) -> impl Res
 
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
-    let response = serde_json::to_string(&MoveResponse::new("left","Going left")).unwrap();
-    println!("{}", serde_json::to_string(&response).unwrap());
-
     
-
     let port = std::env::var("PORT")
         .unwrap_or_else(|_| "3000".to_string())
         .parse()

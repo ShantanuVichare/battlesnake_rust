@@ -32,13 +32,13 @@ impl MoveResponse {
 pub struct RequestBody {
     game: Game,
     turn: usize,
-    board: Board,
+    pub board: Board,
     you: Battlesnake,
 }
 impl RequestBody {
-    // pub fn get_response(&self) -> Direction {
-    //     Direction::left
-    // }
+    pub fn get_response(&self) -> &str {
+        "left"
+    }
 }
 
 #[derive(Debug, Deserialize)]
@@ -49,10 +49,10 @@ struct Game {
 
 #[derive(Debug, Deserialize)]
 pub struct Board {
-    // height: usize,
-    // width: usize, 
+    height: usize,
+    width: usize, 
     pub food: Vec<Point>,
-    // snakes: Vec<Battlesnake>,
+    snakes: Vec<Battlesnake>,
 }
 
 #[derive(Debug, Deserialize)]
