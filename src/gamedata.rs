@@ -67,6 +67,7 @@ impl AppState {
     pub fn initialise(&mut self, game: &Game, turn: usize, board: &Board, you: &Battlesnake) {
         let data = DirectedPoints::new(you);
         self.data = Some(data);
+        println!("Data initialised: {:?}", self.data);
         self.update(game, turn, board, you);
     }
     pub fn update(&mut self, game: &Game, turn: usize, board: &Board, you: &Battlesnake) {
@@ -95,7 +96,7 @@ impl AppState {
     }
 }
 
-
+#[derive(Debug)]
 struct DirectedPoints { // Maps to (H+2)x(W+2) sized grid
     my_id: String,
     dirs: Vec<(Direction, Point, Option<i32>)>,
