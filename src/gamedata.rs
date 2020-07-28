@@ -152,10 +152,10 @@ impl DirectedPoints {
     }
     fn get_next_move(&self) -> Direction {
         let mut dir = Direction::NoIdea;
-        let mut min_val = i32::MAX;
+        let mut max_val = i32::MIN;
         for (d, _p, val) in self.dirs.iter() {
             if let Some(value) = val { 
-                if *value <= min_val {dir = *d; min_val = *value;}
+                if *value >= max_val {dir = *d; max_val = *value;}
             }
         }
         dir
