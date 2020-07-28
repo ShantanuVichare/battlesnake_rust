@@ -17,7 +17,7 @@ async fn start_handler(_req: HttpRequest, body: Json<RequestBody>, data: Data<Ap
     // println!("Request:\n{:?}", _req);
     // println!("Start Body:\n{:?}", body);
 
-    data.initialise(&body);
+    // data.initialise(&body);
     HttpResponse::Ok()
 }
 

@@ -71,9 +71,19 @@ impl AppState {
         self.update(game, turn, board, you);
     }
     pub fn update(&mut self, game: &Game, turn: usize, board: &Board, you: &Battlesnake) {
+
+        let data = match self.data.as_mut() {
+            Some(data) => data,
+            None => {
+                let data = DirectedPoints::new(you);
+                self.data = Some(data);
+                println!("Data initialised during Update: {:?}", self.data);
+                self.data.as_mut().unwrap()
+            },
+        };
+
         println!("Snake: {}\nGame ID: {}\nTurn: {}\n", &you.name, &game.id, turn);
 
-        let data = self.data.as_mut().unwrap();
         data.clear_border_points(board.height, board.width);
         for snake in board.snakes.iter() {
             data.add_snake_body(snake);
