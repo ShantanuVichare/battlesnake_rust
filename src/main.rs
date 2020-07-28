@@ -4,8 +4,8 @@ use serde_json;
 use battlesnake_rust::*;
 
 
-async fn index(req: HttpRequest) -> impl Responder {
-    // println!("Request:\n{:?}", req);
+async fn index(_req: HttpRequest) -> impl Responder {
+    // println!("Request:\n{:?}", _req);
 
     let response = serde_json::to_string(&RootResponse::default()).unwrap();
     HttpResponse::Ok()
@@ -13,16 +13,16 @@ async fn index(req: HttpRequest) -> impl Responder {
     .body(response)
 }
 
-async fn start_handler(req: HttpRequest, body: Json<RequestBody>, data: Data<AppStateWrapper>) -> impl Responder {
-    // println!("Request:\n{:?}", req);
+async fn start_handler(_req: HttpRequest, body: Json<RequestBody>, data: Data<AppStateWrapper>) -> impl Responder {
+    // println!("Request:\n{:?}", _req);
     // println!("Start Body:\n{:?}", body);
 
     data.initialise(&body);
     HttpResponse::Ok()
 }
 
-async fn move_handler(req: HttpRequest, body: Json<RequestBody>, data: Data<AppStateWrapper>) -> impl Responder {
-    // println!("Request:\n{:?}", req);
+async fn move_handler(_req: HttpRequest, body: Json<RequestBody>, data: Data<AppStateWrapper>) -> impl Responder {
+    // println!("Request:\n{:?}", _req);
     // println!("Move Body:\n{:?}", body);
     
     data.update(&body);
@@ -32,8 +32,8 @@ async fn move_handler(req: HttpRequest, body: Json<RequestBody>, data: Data<AppS
     .body(response)
 }
 
-async fn end_handler(req: HttpRequest, body: Json<RequestBody>, data: Data<AppStateWrapper>) -> impl Responder {
-    // println!("Request:\n{:?}", req);
+async fn end_handler(_req: HttpRequest, body: Json<RequestBody>, data: Data<AppStateWrapper>) -> impl Responder {
+    // println!("Request:\n{:?}", _req);
     println!("End Body:\n{:?}", body);
 
     data.end_game(&body);
