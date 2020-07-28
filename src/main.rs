@@ -26,7 +26,7 @@ async fn move_handler(req: HttpRequest, body: Json<RequestBody>, data: Data<AppS
     // println!("Move Body:\n{:?}", body);
     
     data.update(&body);
-    let response = serde_json::to_string(&MoveResponse::new(data.get_response(),"Get out of my way!")).unwrap();
+    let response = serde_json::to_string(&MoveResponse::new(&data.get_response(),"Get out of my way!")).unwrap();
     HttpResponse::Ok()
     .content_type("application/json")
     .body(response)
@@ -52,7 +52,7 @@ async fn main() -> std::io::Result<()> {
     let ip = &std::env::var("IP")
         .unwrap_or_else(|_| "127.0.0.1".to_string());
 
-    let mut data = Data::new(AppStateWrapper::new());
+    let data = Data::new(AppStateWrapper::new());
     
     println!("Attempting to host at {}:{}", ip, port);
     HttpServer::new(move || {
