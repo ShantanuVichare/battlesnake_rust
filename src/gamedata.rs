@@ -52,38 +52,26 @@ impl Point {
 
 pub struct AppState {
     next_move: Direction,
-    data: Option<DirectedPoints>,
+    // data: Option<DirectedPoints>,
 }
 
 impl AppState {
     pub fn new() -> AppState {
         AppState {
             next_move: Direction::NoIdea,
-            data: None,
+            // data: None,
         }
         // Remember to copy this config to "renew" method
     }
     pub fn renew(&mut self) {
         self.next_move = Direction::NoIdea;
-        self.data = None;
+        // self.data = None;
     }
     pub fn initialise(&mut self, game: &Game, turn: usize, board: &Board, you: &Battlesnake) {
-        let data = DirectedPoints::new(you, true);
-        self.data = Some(data);
-        println!("Data initialised as expected");
+        println!("State initialised as expected");
         self.update(game, turn, board, you);
     }
     pub fn update(&mut self, game: &Game, turn: usize, board: &Board, you: &Battlesnake) {
-
-        // let data = match self.data.as_mut() {
-        //     Some(data) => data,
-        //     None => {
-        //         let data = DirectedPoints::new(you, true);
-        //         self.data = Some(data);
-        //         println!("Data initialised during Update");
-        //         self.data.as_mut().unwrap()
-        //     },
-        // };
 
         println!("Snake: {}\nGame ID: {}\nTurn: {}\n", &you.name, &game.id, turn);
 
@@ -91,9 +79,9 @@ impl AppState {
         data.clear_border_points(board.height, board.width);
         for snake in board.snakes.iter() {
             data.add_snake_body(snake);
-            data.evaluate_snake(snake, -1*(board.height+board.width)as i32);
+            data.evaluate_snake(snake, -(board.height as i32 + board.width as i32));
         }
-        data.evaluate_food(&board.snakes, &board.food, (board.height+board.width)as i32);
+        data.evaluate_food(&board.snakes, &board.food, (board.height + board.width) as i32);
         self.next_move = data.get_next_move();
     }
     pub fn get_response(&self) -> String {
@@ -158,7 +146,7 @@ impl DirectedPoints {
         for (_d, p, val) in self.dirs.iter_mut() {
             if snake.body.contains(&p.rev_map()) { *val = None }
         }
-        if self.debug_flag { println!("Dirs after adding Snake body:\n{:?}\n", self.dirs) }
+        if self.debug_flag { println!("Dirs after adding body of Snake at {:?}:\n{:?}\n", snake.head.map(), self.dirs) }
     }
     fn evaluate_snake(&mut self, snake: &Battlesnake, extreme_val: i32) {
         let snake_head = snake.head.map();
@@ -176,7 +164,7 @@ impl DirectedPoints {
         
         if let Some((f,_s,_d)) = viable_food {
             for (_d, p, val) in self.dirs.iter_mut() {
-                if let Some(value) = val { *value += extreme_val+p.manhattan(&f.map()) }
+                if let Some(value) = val { *value += extreme_val-p.manhattan(&f.map()) }
             }
             if self.debug_flag { println!("Dirs after evaluating Food at {:?}:\n{:?}\n", f.map(), self.dirs) }
         } else if self.debug_flag { println!("No close food source identified")}

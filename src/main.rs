@@ -13,13 +13,11 @@ async fn index(_req: HttpRequest) -> impl Responder {
     .body(response)
 }
 
-async fn start_handler(_req: HttpRequest, 
-    // body: Json<RequestBody>, data: Data<AppStateWrapper>
-) -> impl Responder {
+async fn start_handler(_req: HttpRequest, body: Json<RequestBody>, data: Data<AppStateWrapper>) -> impl Responder {
     // println!("Request:\n{:?}", _req);
-    // println!("Start Body:\n{:?}", body);
+    println!("Start Body:\n{:?}", body);
 
-    // data.initialise(&body);
+    data.initialise(&body);
     HttpResponse::Ok()
 }
 
