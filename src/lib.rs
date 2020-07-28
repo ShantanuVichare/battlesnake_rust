@@ -59,7 +59,7 @@ impl AppStateWrapper {
     pub fn get_response(&self) -> String {
         self.state.lock().unwrap().get_response()
     }
-    pub fn end_game(&self, body: &RequestBody) {
+    pub fn end_game(&self, _body: &RequestBody) {
         self.state.lock().unwrap().renew();
     }
 }
